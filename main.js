@@ -1,13 +1,8 @@
-var Way = (function (global, document, exports, undefined) {
+var Sandbox = (function (global, document, exports, undefined) {
   'use strict';
   exports.CLASS_CHAT_FROM = 'from-them';
   exports.CLASS_CHAT_TO   = 'to-them';
-  function add_connection (pool, conn) {
-    if (!pool[conn.peer]) {
-      pool[conn.peer] = conn;
-    }
-    return pool[conn.peer];
-  }
+
   function chat_from (display, text, from) {
     var chat = document.createElement('span');
     chat.textContent = from +' : '+ text;
@@ -25,46 +20,45 @@ var Way = (function (global, document, exports, undefined) {
     var
       apikey = env.SKYWAY_API_KEY,
       peer = exports.peer = new Peer({key: apikey}),
-      pool = exports.connections = {},
+      connections = {},
       display = exports.display = document.getElementById('chat-display'),
       message = document.getElementById('chat-message');
 
     document.getElementById('peer-connect').onclick = function peerConnect (event) {
+      function add (pid) {
+        if (!connections[pid]) {
+          var conn = connections[pid] = peer.connect(pid);
+          conn.on('data', function (data) {
+            console.log("Recieve:", message.value);
+            chat_from(display, data.message, data.from);
+          });
+        }
+      }
       peer.listAllPeers(function (list) {
-        var others = list.filter(function (p, idx) {
-          return p !== peer.id;
-        });
-        others.forEach(function (p) {
-          if (!pool[p]) {
-            console.log("Make connection to:", p);
-            var conn = add_connection(pool, peer.connect(p));
-            conn.on('data', function (data) {
-              console.log('Connection data received', data);
-              chat_from(display, data.message, data.from);
-            });
-          }
-        });
+        console.log(list);
+        list.forEach(add);
       });
     };
+
     document.getElementById('chat-send').onclick = function sendMessage (event) {
-      console.log("Message text:", message.value);
-      Object.keys(pool).forEach(function (key) {
-        var conn = pool[key];
-        console.log("Sending message to:", conn.peer);
+      function send (conn) {
         conn.send({
           from: peer.id,
           to: conn.peer,
           message: message.value
         });
         chat_to(display, message.value, conn.peer);
+      }
+      // Send message
+      console.log("Send:", message.value);
+      Object.keys(connections).forEach(function (pid) {
+        send(connections[pid]);
       });
     };
 
     peer.on('connection', function (conn) {
-      console.log('Peer connected:', conn);
-      add_connection(pool, conn);
       conn.on('data', function (data) {
-        console.log('Connection data received', data);
+        console.log("Recieve text:", message.value);
         chat_from(display, data.message, data.from);
       });
     });
@@ -73,4 +67,4 @@ var Way = (function (global, document, exports, undefined) {
   return exports;
 })(this, this.document, {})
 
-console.log(Way);
+console.log(Sandbox);

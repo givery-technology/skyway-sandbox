@@ -12,5 +12,5 @@ app.get(/.*\.(html|js|css|json)/, function(req, res) {
   res.sendFile(path.join(__dirname + req.url));
 });
 
-app.listen(3000);
+app.listen(80);
 console.log("Running server...");

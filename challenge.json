@@ -1,0 +1,13 @@
+{
+  "editable": [
+    "main.*",
+    "chat.*"
+  ],
+  "exclude": [
+    "challenge.json"
+  ],
+  "readme": {
+    "en": "readme.md",
+    "ja": "readme_ja.md"
+  }
+}

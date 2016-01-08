@@ -2,8 +2,10 @@
   "editable": [
     "main.*",
     "chat.*",
-    "specifications/env.json"
+    "specifications/env.json",
+    "answer.md"
   ],
+  "allowNewFile": true,
   "exclude": [
     "challenge.json"
   ],

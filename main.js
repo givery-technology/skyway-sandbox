@@ -1,5 +1,6 @@
 var Way = (function (global, document, exports, undefined) {
   'use strict';
+  //BEGIN_CHALLENGE
   exports.CLASS_CHAT_FROM = 'from-them';
   exports.CLASS_CHAT_TO   = 'to-them';
   function add_connection (pool, conn) {
@@ -20,16 +21,20 @@ var Way = (function (global, document, exports, undefined) {
     chat.className = ['chat', exports.CLASS_CHAT_TO].join(' ');
     display.appendChild(chat);
   }
+  //END_CHALLENGE
   loadJson('./specifications/env.json', function (env) {
     console.log('environment loaded');
     var
       apikey = env.SKYWAY_API_KEY,
-      peer = exports.peer = new Peer({key: apikey}),
+      peer = exports.peer = new Peer({key: apikey});
+    //BEGIN_CHALLENGE
+    var
       pool = exports.connections = {},
       display = exports.display = document.getElementById('chat-display'),
       message = document.getElementById('chat-message');
-
+    //END_CHALLENGE
     document.getElementById('peer-connect').onclick = function peerConnect (event) {
+      //BEGIN_CHALLENGE
       peer.listAllPeers(function (list) {
         var others = list.filter(function (p, idx) {
           return p !== peer.id;
@@ -45,8 +50,10 @@ var Way = (function (global, document, exports, undefined) {
           }
         });
       });
+      //END_CHALLENGE
     };
     document.getElementById('chat-send').onclick = function sendMessage (event) {
+      //BEGIN_CHALLENGE
       console.log("Message text:", message.value);
       Object.keys(pool).forEach(function (key) {
         var conn = pool[key];
@@ -58,8 +65,10 @@ var Way = (function (global, document, exports, undefined) {
         });
         chat_to(display, message.value, conn.peer);
       });
+      //END_CHALLENGE
     };
 
+    //BEGIN_CHALLENGE
     peer.on('connection', function (conn) {
       console.log('Peer connected:', conn);
       add_connection(pool, conn);
@@ -68,7 +77,7 @@ var Way = (function (global, document, exports, undefined) {
         chat_from(display, data.message, data.from);
       });
     });
-
+    //END_CHALLENGE
   });
   return exports;
 })(this, this.document, {})

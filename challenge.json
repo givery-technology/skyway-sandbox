@@ -1,7 +1,8 @@
 {
   "editable": [
     "main.*",
-    "chat.*"
+    "chat.*",
+    "specifications/env.json"
   ],
   "exclude": [
     "challenge.json"
